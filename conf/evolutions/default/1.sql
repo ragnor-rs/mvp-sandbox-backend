@@ -1,23 +1,24 @@
 # --- !Ups
 
 create table repo_like (
-  user_id                       bigint,
-  repo_id                       bigint
+  user_id                       bigint not null,
+  repo_id                       bigint not null
 );
 
 create table repo (
   id                            bigint not null,
-  name                          varchar(255),
+  name                          varchar(255) not null,
   url                           varchar(255),
-  owner_id                      bigint,
-  liked                         bigint default 0,
+  owner_id                      bigint not null,
+  like_count                    bigint default 0,
   constraint pk_repo primary key (id)
 );
 create sequence repo_seq;
 
 create table repo_user (
   id                            bigint not null,
-  login                         varchar(255),
+  login                         varchar(255) not null,
+  name                          varchar(255),
   constraint pk_repo_user primary key (id)
 );
 create sequence repo_user_seq;

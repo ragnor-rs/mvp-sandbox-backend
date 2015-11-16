@@ -2,8 +2,10 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 /**
  * Created by Reist on 16.11.15.
@@ -11,15 +13,22 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Repo extends AbstractEntity {
 
+    @Column(nullable = false)
     private String name;
 
     @JsonProperty("html_url")
     private String url;
 
     @ManyToOne
+    @Column(nullable = false)
     private User owner;
 
-    private long liked;
+    @JsonProperty("like_count")
+    private long likeCount;
+
+    @JsonProperty("liked_by_me")
+    @Transient
+    private boolean likedByMe;
 
     public String getName() {
         return name;
@@ -45,12 +54,20 @@ public class Repo extends AbstractEntity {
         this.owner = owner;
     }
 
-    public long getLiked() {
-        return liked;
+    public long getLikeCount() {
+        return likeCount;
     }
 
-    public void setLiked(long liked) {
-        this.liked = liked;
+    public void setLikeCount(long likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public boolean isLikedByMe() {
+        return likedByMe;
+    }
+
+    public void setLikedByMe(boolean likedByMe) {
+        this.likedByMe = likedByMe;
     }
 
 }
