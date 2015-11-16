@@ -2,6 +2,9 @@ package controllers;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.Like;
 import models.Repo;
 import models.Response;
@@ -25,25 +28,25 @@ public class Repos {
     public static Result list() {
         User user = currentUser();
         if (user == null) {
-            return badRequest();
+            return prepareError("User is null");
         }
         List<Repo> list = Ebean.find(Repo.class).findList();
-        return prepareResponse(list, user);
+        return prepareSuccess(list, user);
     }
 
     public static Result get(Long id) {
         User user = currentUser();
         if (user == null) {
-            return badRequest();
+            return prepareError("User is null");
         }
         Repo repo = Ebean.find(Repo.class, id);
-        return prepareResponse(repo, user);
+        return prepareSuccess(repo, user);
     }
 
     public static Result like(Long id) {
         User user = currentUser();
         if (user == null) {
-            return badRequest();
+            return prepareError("User is null");
         }
         Repo repo = Ebean.find(Repo.class, id);
         if (like(repo, user) == null) {
@@ -53,14 +56,14 @@ public class Repos {
             Ebean.save(like);
             return ok();
         } else {
-            return badRequest();
+            return prepareError("Like is not null");
         }
     }
 
     public static Result unlike(Long id) {
         User user = currentUser();
         if (user == null) {
-            return badRequest();
+            return prepareError("User is null");
         }
         Ebean.createSqlUpdate("delete from " + Like.TABLE_NAME + " where " + Like.COLUMN_REPO_ID + " = :repo_id_value and " + Like.COLUMN_USER_ID + " = :user_id_value")
                 .setParameter("repo_id_value", id)
@@ -72,9 +75,13 @@ public class Repos {
     public static Result create() {
         User user = currentUser();
         if (user == null) {
-            return badRequest();
+            return prepareError("User is null");
         }
-        Repo repo = Json.fromJson(request().body().asJson(), Repo.class);
+        JsonNode json = request().body().asJson();
+        if (json == null) {
+            return prepareError("Repo is null");
+        }
+        Repo repo = Json.fromJson(json, Repo.class);
         repo.setOwner(user);
         Ebean.save(repo);
         Response<Repo> response = new Response<>();
@@ -83,7 +90,15 @@ public class Repos {
     }
 
     @NotNull
-    private static Result prepareResponse(Repo repo, User user) {
+    private static Result prepareError(String error) {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode node = mapper.createObjectNode();
+        node.put("error", error);
+        return badRequest(toJson(node));
+    }
+
+    @NotNull
+    private static Result prepareSuccess(Repo repo, User user) {
         Response<Repo> response = new Response<>();
         repo.setLikedByMe(like(repo, user) != null);
         response.setData(repo);
@@ -91,7 +106,7 @@ public class Repos {
     }
 
     @NotNull
-    public static Result prepareResponse(List<Repo> list, User user) {
+    public static Result prepareSuccess(List<Repo> list, User user) {
         Response<List<Repo>> response = new Response<>();
         for (Repo repo : list) {
             repo.setLikedByMe(like(repo, user) != null);
