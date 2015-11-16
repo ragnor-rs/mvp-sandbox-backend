@@ -24,9 +24,13 @@ public class Users {
     }
 
     public static Result listUserRepos(Long id) {
+        User currentUser = Repos.currentUser();
+        if (currentUser == null) {
+            return Application.prepareError("User is null");
+        }
         User user = Ebean.find(User.class, id);
         List<Repo> list = Ebean.find(Repo.class).where(Expr.eq("owner", user)).findList();
-        return Repos.prepareSuccess(list, user);
+        return Repos.prepareSuccess(list, currentUser);
     }
 
 }
