@@ -1,5 +1,7 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
@@ -11,10 +13,13 @@ public class Repo extends AbstractEntity {
 
     private String name;
 
+    @JsonProperty("html_url")
     private String url;
 
     @ManyToOne
     private User owner;
+
+    private long liked;
 
     public String getName() {
         return name;
@@ -38,6 +43,14 @@ public class Repo extends AbstractEntity {
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public long getLiked() {
+        return liked;
+    }
+
+    public void setLiked(long liked) {
+        this.liked = liked;
     }
 
 }
