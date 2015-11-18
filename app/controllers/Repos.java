@@ -41,33 +41,61 @@ public class Repos {
     }
 
     public static Result like(Long id) {
+
         User currentUser = currentUser();
+
         if (currentUser == null) {
             return Application.prepareError("User is null");
         }
+
         Repo repo = Ebean.find(Repo.class, id);
-        if (like(repo, currentUser) == null) {
-            Like like = new Like();
-            like.setRepo(repo);
-            like.setUser(currentUser);
-            Ebean.save(like);
-            return prepareSuccess(repo, currentUser);
-        } else {
+
+        if (repo == null) {
+            return Application.prepareError("Repo is not null");
+        }
+
+        if (like(repo, currentUser) != null) {
             return Application.prepareError("Like is not null");
         }
+
+        Like like = new Like();
+        like.setRepo(repo);
+        like.setUser(currentUser);
+        Ebean.save(like);
+
+        repo.setLikeCount(repo.getLikeCount() + 1);
+
+        Ebean.save(repo);
+
+        return prepareSuccess(repo, currentUser);
+
     }
 
     public static Result unlike(Long id) {
+
         User currentUser = currentUser();
+
         if (currentUser == null) {
             return Application.prepareError("User is null");
         }
+
+        Repo repo = Ebean.find(Repo.class, id);
+
+        if (repo == null) {
+            return Application.prepareError("Repo is not null");
+        }
+
         Ebean.createSqlUpdate("delete from " + Like.TABLE_NAME + " where " + Like.COLUMN_REPO_ID + " = :repo_id_value and " + Like.COLUMN_USER_ID + " = :user_id_value")
                 .setParameter("repo_id_value", id)
                 .setParameter("user_id_value", currentUser.getId())
                 .execute();
-        Repo repo = Ebean.find(Repo.class, id);
+
+        repo.setLikeCount(repo.getLikeCount() - 1);
+
+        Ebean.save(repo);
+
         return prepareSuccess(repo, currentUser);
+
     }
 
     public static Result create() {

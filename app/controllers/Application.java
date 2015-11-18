@@ -28,7 +28,7 @@ public class Application extends Controller {
         ActorSystem system = Akka.system();
         system.scheduler().schedule(
                 Duration.create(0, TimeUnit.MILLISECONDS),   // initial delay
-                Duration.create(10, TimeUnit.SECONDS),        // run job every 5 minutes
+                Duration.create(1, TimeUnit.MINUTES),        // job period
                 () -> {
                     Ebean.find(Repo.class).findEach(repo -> {
                         long likeCount = Ebean.find(Like.class).where(Expr.eq("repo", repo)).findRowCount();
