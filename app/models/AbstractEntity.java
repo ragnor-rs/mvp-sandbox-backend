@@ -13,12 +13,22 @@ public class AbstractEntity {
     @Column(nullable = false)
     private Long id;
 
+    private long revision;
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public long getRevision() {
+        return revision;
+    }
+
+    public void setRevision(long revision) {
+        this.revision = revision;
     }
 
 }

@@ -11,7 +11,7 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 # Repos
 GET     /repos                      controllers.Repos.list()
 GET     /repos/:id                  controllers.Repos.get(id: Long)
-POST    /repos                      controllers.Repos.create()
+POST    /repos                      controllers.Repos.save()
 POST    /repos/:id/like             controllers.Repos.like(id: Long)
 POST    /repos/:id/unlike           controllers.Repos.unlike(id: Long)
 

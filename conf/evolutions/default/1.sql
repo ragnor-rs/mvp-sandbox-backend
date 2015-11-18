@@ -11,6 +11,7 @@ create table repo (
   url                           varchar(255),
   owner_id                      bigint not null,
   like_count                    bigint default 0,
+  revision                      bigint default 0,
   constraint pk_repo primary key (id)
 );
 create sequence repo_seq;
@@ -19,6 +20,7 @@ create table repo_user (
   id                            bigint not null,
   login                         varchar(255) not null,
   name                          varchar(255),
+  revision                      bigint default 0,
   constraint pk_repo_user primary key (id)
 );
 create sequence repo_user_seq;
@@ -32,8 +34,8 @@ create index ix_repo_like_repo_id on repo_like (repo_id);
 alter table repo add constraint fk_repo_owner_id foreign key (owner_id) references repo_user (id) on delete restrict on update restrict;
 create index ix_repo_owner_id on repo (owner_id);
 
-insert into repo_user (id, login) values (nextval('repo_user_seq'), 'mike');
-insert into repo_user (id, login) values (nextval('repo_user_seq'), 'sparky');
+insert into repo_user (id, login, name) values (nextval('repo_user_seq'), 'mike', 'Michael');
+insert into repo_user (id, login, name) values (nextval('repo_user_seq'), 'sparky', 'Davide');
 insert into repo (id, name, url, owner_id) values (nextval('repo_seq'), 'cracky', 'http://ya.ru', (select id from repo_user where login='mike'));
 insert into repo (id, name, url, owner_id) values (nextval('repo_seq'), 'wacky', 'http://yandex.ru', (select id from repo_user where login='mike'));
 insert into repo (id, name, url, owner_id) values (nextval('repo_seq'), 'plop', 'http://google.ru', (select id from repo_user where login='sparky'));

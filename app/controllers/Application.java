@@ -5,6 +5,7 @@ import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import models.AbstractEntity;
 import models.Like;
 import models.Repo;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +39,30 @@ public class Application extends Controller {
                 },
                 system.dispatcher()
         );
+    }
+
+    public static <T extends AbstractEntity> void save(T newEntity) {
+
+        Object toSave = newEntity;
+
+        AbstractEntity oldEntity = Ebean.find(newEntity.getClass(), newEntity.getId());
+
+        if (oldEntity != null) {
+
+            long oldRevision = oldEntity.getRevision();
+            long newRevision = newEntity.getRevision();
+
+            if (oldRevision > newRevision) {
+                toSave = oldEntity;
+            }  else {
+                toSave = newEntity;
+                newEntity.setRevision(Math.max(oldRevision, newRevision) + 1);
+            }
+            
+        }
+
+        Ebean.save(toSave);
+
     }
 
     @NotNull

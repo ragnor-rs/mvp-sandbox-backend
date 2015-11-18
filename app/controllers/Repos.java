@@ -8,6 +8,7 @@ import models.Repo;
 import models.Response;
 import models.User;
 import org.jetbrains.annotations.NotNull;
+import play.db.ebean.Transactional;
 import play.libs.Json;
 import play.mvc.Result;
 
@@ -40,16 +41,15 @@ public class Repos {
         return prepareSuccess(repo, currentUser);
     }
 
+    @Transactional
     public static Result like(Long id) {
 
         User currentUser = currentUser();
-
         if (currentUser == null) {
             return Application.prepareError("User is null");
         }
 
         Repo repo = Ebean.find(Repo.class, id);
-
         if (repo == null) {
             return Application.prepareError("Repo is not null");
         }
@@ -65,22 +65,21 @@ public class Repos {
 
         repo.setLikeCount(repo.getLikeCount() + 1);
 
-        Ebean.save(repo);
+        Application.save(repo);
 
         return prepareSuccess(repo, currentUser);
 
     }
 
+    @Transactional
     public static Result unlike(Long id) {
 
         User currentUser = currentUser();
-
         if (currentUser == null) {
             return Application.prepareError("User is null");
         }
 
         Repo repo = Ebean.find(Repo.class, id);
-
         if (repo == null) {
             return Application.prepareError("Repo is not null");
         }
@@ -92,27 +91,33 @@ public class Repos {
 
         repo.setLikeCount(repo.getLikeCount() - 1);
 
-        Ebean.save(repo);
+        Application.save(repo);
 
         return prepareSuccess(repo, currentUser);
 
     }
 
-    public static Result create() {
+    @Transactional
+    public static Result save() {
+
         User currentUser = currentUser();
         if (currentUser == null) {
             return Application.prepareError("User is null");
         }
+
         JsonNode json = request().body().asJson();
         if (json == null) {
             return Application.prepareError("Repo is null");
         }
+
         Repo repo = Json.fromJson(json, Repo.class);
         repo.setOwner(currentUser);
-        Ebean.save(repo);
+        Application.save(repo);
+
         Response<Repo> response = new Response<>();
         response.setData(repo);
         return ok(toJson(response));
+
     }
 
     @NotNull
