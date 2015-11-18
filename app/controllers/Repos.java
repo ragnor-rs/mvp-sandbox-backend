@@ -51,7 +51,7 @@ public class Repos {
             like.setRepo(repo);
             like.setUser(currentUser);
             Ebean.save(like);
-            return ok();
+            return prepareSuccess(repo, currentUser);
         } else {
             return Application.prepareError("Like is not null");
         }
@@ -66,7 +66,8 @@ public class Repos {
                 .setParameter("repo_id_value", id)
                 .setParameter("user_id_value", currentUser.getId())
                 .execute();
-        return ok();
+        Repo repo = Ebean.find(Repo.class, id);
+        return prepareSuccess(repo, currentUser);
     }
 
     public static Result create() {
