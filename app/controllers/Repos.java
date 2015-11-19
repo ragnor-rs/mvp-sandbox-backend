@@ -65,7 +65,7 @@ public class Repos {
 
         repo.setLikeCount(repo.getLikeCount() + 1);
 
-        Application.save(repo);
+        Ebean.save(repo);
 
         return prepareSuccess(repo, currentUser);
 
@@ -91,7 +91,7 @@ public class Repos {
 
         repo.setLikeCount(repo.getLikeCount() - 1);
 
-        Application.save(repo);
+        Ebean.save(repo);
 
         return prepareSuccess(repo, currentUser);
 
