@@ -45,20 +45,26 @@ public class Application extends Controller {
 
         Object toSave = newEntity;
 
-        AbstractEntity oldEntity = Ebean.find(newEntity.getClass(), newEntity.getId());
+        Long id = newEntity.getId();
 
-        if (oldEntity != null) {
+        if (id != null) {
 
-            long oldRevision = oldEntity.getRevision();
-            long newRevision = newEntity.getRevision();
+            AbstractEntity oldEntity = Ebean.find(newEntity.getClass(), id);
 
-            if (oldRevision > newRevision) {
-                toSave = oldEntity;
-            }  else {
-                toSave = newEntity;
-                newEntity.setRevision(Math.max(oldRevision, newRevision) + 1);
+            if (oldEntity != null) {
+
+                long oldRevision = oldEntity.getRevision();
+                long newRevision = newEntity.getRevision();
+
+                if (oldRevision > newRevision) {
+                    toSave = oldEntity;
+                } else {
+                    toSave = newEntity;
+                    newEntity.setRevision(Math.max(oldRevision, newRevision) + 1);
+                }
+
             }
-            
+
         }
 
         Ebean.save(toSave);
