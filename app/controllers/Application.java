@@ -43,11 +43,13 @@ public class Application extends Controller {
 
     public static <T extends AbstractEntity> void save(T newEntity) {
 
-        Object toSave = newEntity;
-
         Long id = newEntity.getId();
 
-        if (id != null) {
+        if (id == null) {
+
+            Ebean.save(newEntity);
+
+        } else {
 
             AbstractEntity oldEntity = Ebean.find(newEntity.getClass(), id);
 
@@ -57,17 +59,20 @@ public class Application extends Controller {
                 long newRevision = newEntity.getRevision();
 
                 if (oldRevision > newRevision) {
-                    toSave = oldEntity;
-                } else {
-                    toSave = newEntity;
-                    newEntity.setRevision(Math.max(oldRevision, newRevision) + 1);
+                    return;
                 }
+
+                newEntity.setRevision(newRevision + 1);
+
+                Ebean.update(newEntity);
+
+            } else {
+
+                throw new IllegalStateException("oldEntity is null");
 
             }
 
         }
-
-        Ebean.save(toSave);
 
     }
 
