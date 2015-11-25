@@ -5,14 +5,14 @@ package models;
  */
 public class Response<T> {
 
-    private T data;
+    private T result;
 
-    public T getData() {
-        return data;
+    public T getResult() {
+        return result;
     }
 
-    public void setData(T data) {
-        this.data = data;
+    public void setResult(T result) {
+        this.result = result;
     }
 
 }

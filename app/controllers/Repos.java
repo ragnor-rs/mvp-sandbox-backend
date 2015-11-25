@@ -112,7 +112,7 @@ public class Repos {
         Application.save(repo);
 
         Response<Repo> response = new Response<>();
-        response.setData(repo);
+        response.setResult(repo);
         return ok(toJson(response));
 
     }
@@ -122,10 +122,8 @@ public class Repos {
 
         int numOfDeleted = Ebean.delete(Repo.class, id);
 
-        Response<DeleteResult> response = new Response<>();
-        DeleteResult deleteResult = new DeleteResult();
-        deleteResult.setNumOfDeleted(numOfDeleted);
-        response.setData(deleteResult);
+        Response<Integer> response = new Response<>();
+        response.setResult(numOfDeleted);
         return ok(toJson(response));
 
     }
@@ -134,7 +132,7 @@ public class Repos {
     private static Result prepareSuccess(Repo repo, User currentUser) {
         Response<Repo> response = new Response<>();
         repo.setLikedByMe(like(repo, currentUser) != null);
-        response.setData(repo);
+        response.setResult(repo);
         return ok(toJson(response));
     }
 
@@ -144,7 +142,7 @@ public class Repos {
         for (Repo repo : list) {
             repo.setLikedByMe(like(repo, currentUser) != null);
         }
-        response.setData(list);
+        response.setResult(list);
         return ok(toJson(response));
     }
 

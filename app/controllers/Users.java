@@ -19,7 +19,7 @@ public class Users {
 
     public static Result list() {
         Response<List<User>> response = new Response<>();
-        response.setData(Ebean.find(User.class).findList());
+        response.setResult(Ebean.find(User.class).findList());
         return ok(toJson(response));
     }
 
