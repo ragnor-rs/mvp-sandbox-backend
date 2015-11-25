@@ -3,10 +3,7 @@ package controllers;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.fasterxml.jackson.databind.JsonNode;
-import models.Like;
-import models.Repo;
-import models.Response;
-import models.User;
+import models.*;
 import org.jetbrains.annotations.NotNull;
 import play.db.ebean.Transactional;
 import play.libs.Json;
@@ -116,6 +113,19 @@ public class Repos {
 
         Response<Repo> response = new Response<>();
         response.setData(repo);
+        return ok(toJson(response));
+
+    }
+
+    @Transactional
+    public static Result delete(Long id) {
+
+        int numOfDeleted = Ebean.delete(Repo.class, id);
+
+        Response<DeleteResult> response = new Response<>();
+        DeleteResult deleteResult = new DeleteResult();
+        deleteResult.setNumOfDeleted(numOfDeleted);
+        response.setData(deleteResult);
         return ok(toJson(response));
 
     }
